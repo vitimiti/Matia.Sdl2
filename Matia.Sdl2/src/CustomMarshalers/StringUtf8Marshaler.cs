@@ -6,12 +6,12 @@ internal sealed class StringUtf8Marshaler : ICustomMarshaler
 {
     public const string LeaveAllocatedCookie = "LeaveAllocated";
 
-    public static ICustomMarshaler? GetInstance(string cookie)
+    public static ICustomMarshaler GetInstance(string cookie)
     {
         return cookie switch
         {
-            LeaveAllocatedCookie => _allocatedInstance ?? new StringUtf8Marshaler(true),
-            _ => _defaultInstance ?? new StringUtf8Marshaler(false)
+            LeaveAllocatedCookie => s_allocatedInstance ??= new StringUtf8Marshaler(true),
+            _ => s_defaultInstance ??= new StringUtf8Marshaler(false)
         };
     }
 
@@ -20,13 +20,13 @@ internal sealed class StringUtf8Marshaler : ICustomMarshaler
         _isAllocated = isAllocated;
     }
 
-    public void CleanUpManagedData(object ManagedObj)
+    public void CleanUpManagedData(object managedObj)
     {
-        if (ManagedObj is not string)
+        if (managedObj is not string)
         {
             throw new ArgumentException(
-                $"{nameof(ManagedObj)} was expected to be of type {typeof(string)} but was instead of type {ManagedObj.GetType()}",
-                nameof(ManagedObj)
+                $"{nameof(managedObj)} was expected to be of type {typeof(string)} but was instead of type {managedObj.GetType()}",
+                nameof(managedObj)
             );
         }
     }
@@ -41,17 +41,14 @@ internal sealed class StringUtf8Marshaler : ICustomMarshaler
         return -1;
     }
 
-    public IntPtr MarshalManagedToNative(object ManagedObj)
+    public IntPtr MarshalManagedToNative(object managedObj)
     {
-        if (ManagedObj is not string str)
-        {
-            throw new ArgumentException(
-                $"{nameof(ManagedObj)} was expected to be of type {typeof(string)} but was instead of type {ManagedObj.GetType()}",
-                nameof(ManagedObj)
-            );
-        }
-
-        return Marshal.StringToCoTaskMemUTF8(str);
+        return managedObj is not string str
+            ? throw new ArgumentException(
+                $"{nameof(managedObj)} was expected to be of type {typeof(string)} but was instead of type {managedObj.GetType()}",
+                nameof(managedObj)
+            )
+            : Marshal.StringToCoTaskMemUTF8(str);
     }
 
     public object MarshalNativeToManaged(IntPtr pNativeData)
@@ -63,8 +60,8 @@ internal sealed class StringUtf8Marshaler : ICustomMarshaler
 
     private readonly bool _isAllocated;
 
-    private static readonly ICustomMarshaler? _defaultInstance;
-    private static readonly ICustomMarshaler? _allocatedInstance;
+    private static ICustomMarshaler? s_defaultInstance;
+    private static ICustomMarshaler? s_allocatedInstance;
 
     #endregion
 }
