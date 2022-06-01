@@ -10,7 +10,7 @@
     <GeneratedAssemblyInfoFile>AssemblyInfo.cs</GeneratedAssemblyInfoFile>
     <GenerateDocumentation>true</GenerateDocumentation>
     <AssemblyTitle>Matia.Sdl2</AssemblyTitle>
-    <AssemblyVersion>2.0.22-alpha-1</AssemblyVersion>
+    <AssemblyVersion>2.0.22</AssemblyVersion>
     <Description>A managed C# wrapper for native SDL2.</Description>
     <Copyright>2022 © Victor Matia &lt;vmatir@gmail.com&gt;</Copyright>
   </PropertyGroup>
